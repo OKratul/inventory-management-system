@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Customer;
+use App\Models\ProductSku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
@@ -105,4 +106,27 @@ class PosController extends Controller
             'carts' => $carts
         ]);
     }
+
+    public function updateStock($product_id)
+    {
+        $validatedData = request()->validate([
+            'product_sku' => 'required|array', // Make sure 'product_sku' is an array
+        ]);
+
+        $products = ProductSku::where('product_id', $product_id)->get();
+
+        foreach ($products as $product) {
+            foreach ($validatedData['product_sku'] as $sku) { // Loop through validated product_skus
+                if ($sku == $product->product_sku) {
+                    $product->update([
+                        'stock_status' => 'out_stock',
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Stock Update');
+    }
+
+
 }

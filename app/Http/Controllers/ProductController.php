@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductSku;
 use Exception;
 use App\Models\Unit;
 use App\Models\Product;
@@ -93,21 +94,58 @@ class ProductController extends Controller
 
         Product::create($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been created!');
+        $product = Product::latest()->first();
+        $product_id = $product->id;
+
+        return to_route('product-sku',[$product_id]);
+
+//        return Redirect::route('products.index')->with('success', 'Product has been created!');
     }
+
+    public function productSku($product_id){
+
+            $products = Product::where('id',$product_id)->first();
+
+            return view('products.productSku',compact('products'));
+
+    }
+
+    public function addProductSku($product_id){
+
+        $this->validate(\request(),[
+            'product_sku' => 'required'
+        ]);
+
+        $productSkus = \request('product_sku'); // Get the array of product SKUs
+
+        foreach ($productSkus as $productSku){
+
+            ProductSku::create([
+                'product_id' => $product_id,
+                'product_sku'=> $productSku,
+                'stock_status' => 'in_stock',
+            ]);
+
+        }
+
+        return Redirect::route('products.index')->with('success', 'Product has been created!');
+
+    }
+
 
     /**
      * Display the specified resource.
      */
     public function show(Product $product)
     {
+        $productWithSkus = $product->load('productSkus');
+
         // Generate a barcode
         $generator = new BarcodeGeneratorHTML();
-
         $barcode = $generator->getBarcode($product->product_code, $generator::TYPE_CODE_128);
 
         return view('products.show', [
-            'product' => $product,
+            'product' => $productWithSkus,
             'barcode' => $barcode,
         ]);
     }
@@ -163,6 +201,9 @@ class ProductController extends Controller
         }
 
         Product::where('id', $product->id)->update($validatedData);
+
+        $product = Product::latest()->first();
+        $product_id = $product->id;
 
         return Redirect::route('products.index')->with('success', 'Product has been updated!');
     }
@@ -229,12 +270,16 @@ class ProductController extends Controller
             // $error_code = $e->errorInfo[1];
             return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
         }
+
+
         return Redirect::route('products.index')->with('success', 'Data product has been imported!');
     }
 
     /**
      * Handle export data products.
      */
+
+
     function export(){
         $products = Product::all()->sortBy('product_name');
 

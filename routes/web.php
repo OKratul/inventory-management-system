@@ -47,6 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
     Route::get('/products/import', [ProductController::class, 'import'])->name('products.import');
     Route::post('/products/import', [ProductController::class, 'handleImport'])->name('products.handleImport');
+
+    Route::get('product/{id}/skus',[ProductController::class,'productSku'])->name('product-sku');
+    Route::post('product/{id}/skus',[ProductController::class,'addProductSku'])->name('add-product-sku');
+
     Route::resource('/products', ProductController::class);
 
     // Route POS
@@ -57,6 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pos/invoice', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
 
     Route::post('/pos', [OrderController::class, 'createOrder'])->name('pos.createOrder');
+
+    Route::post('/pos/invoice/{id}/update-sku',[PosController::class,'updateStock'])->name('update_sku');
 
     // Route Orders
     Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');

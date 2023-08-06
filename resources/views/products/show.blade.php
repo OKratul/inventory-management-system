@@ -37,6 +37,11 @@
                         <!-- Product image -->
                         <img class="img-account-profile mb-2" src="{{ asset('assets/img/products/default.webp') }}" alt="" id="image-preview" />
                     </div>
+                    <div class="card-body">
+                        @foreach ($product->productSkus as $productSku)
+                            <p class="{{$productSku->stock_status == 'out_stock' ? 'bg-danger text-white' : 'bg-success text-white'}}">SKU:- {{ $productSku->product_sku }} <span>{{$productSku->stock_status}}</span></p>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 

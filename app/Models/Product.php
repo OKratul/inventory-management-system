@@ -47,6 +47,10 @@ class Product extends Model
         return $this->belongsTo(Unit::class, 'unit_id');
     }
 
+    public function productSkus(){
+        return $this->hasMany(ProductSku::class);
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {

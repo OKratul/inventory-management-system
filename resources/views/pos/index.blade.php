@@ -125,6 +125,33 @@
                     </div>
                     <!-- Form Group (customer) -->
 
+                   @if(!empty($item))
+                       @php
+                            $skus = \App\Models\ProductSku::where('product_id',$item->id)->get();
+                       @endphp
+                        <form action="{{route('update_sku',[$item->id])}}" method="POST">
+                            @csrf
+                            @for($i = 0; $i < $item->qty; $i++)
+                                <div class="row gx-3 mb-3">
+                                    <div>
+                                        <label class="small mb-1"> Sku* </label>
+                                        <select name="product_sku[]" required>
+                                            @foreach($skus as $sku)
+                                                <option value="{{$sku->product_sku}}">{{$sku->product_sku}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endfor
+                            <div class="mb-1">
+                                <button type="submit" class="btn btn-primary">
+                                    Update Stock
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+
+
                     <form action="{{ route('pos.createInvoice') }}" method="POST">
                         @csrf
                         <div class="row mb-3">
