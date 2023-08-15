@@ -123,6 +123,7 @@ class PurchaseController extends Controller
         // Create Purchase Details
         $pDetails = array();
         $products = count($request->product_id);
+
         for ($i=0; $i < $products; $i++) {
             $pDetails['purchase_id'] = $purchase_id;
             $pDetails['product_id'] = $request->product_id[$i];
@@ -134,8 +135,13 @@ class PurchaseController extends Controller
             PurchaseDetails::insert($pDetails);
         }
 
-        return Redirect::route('purchases.allPurchases')->with('success', 'Purchase has been created!');
+//        $this->addProductCode($pDetails);
+
+//        dd($pDetails);
+       return view('purchases.addProductCode',compact('pDetails'));
     }
+
+
 
     /**
      * Handle update a status purchase
